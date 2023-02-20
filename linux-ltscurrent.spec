@@ -304,9 +304,9 @@ createCPIO %{ktarget} %{kversion}
 
 rm -rf %{buildroot}/usr/lib/firmware
 
-mkdir -p %{buildroot}/usr/share/package-licenses/linux-lts2021
-cp COPYING %{buildroot}/usr/share/package-licenses/linux-lts2021/COPYING
-cp -a LICENSES/* %{buildroot}/usr/share/package-licenses/linux-lts2021
+mkdir -p %{buildroot}/usr/share/package-licenses/linux-ltscurrent
+cp COPYING %{buildroot}/usr/share/package-licenses/linux-ltscurrent/COPYING
+cp -a LICENSES/* %{buildroot}/usr/share/package-licenses/linux-ltscurrent
 
 %files
 %dir /usr/lib/kernel
@@ -325,7 +325,7 @@ cp -a LICENSES/* %{buildroot}/usr/share/package-licenses/linux-lts2021
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/linux-lts2021
+/usr/share/package-licenses/linux-ltscurrent
 
 %files cpio
 /usr/lib/kernel/initrd-org.clearlinux.%{ktarget}.%{version}-%{release}
