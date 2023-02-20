@@ -1,0 +1,221 @@
+--- a/arch/x86/include/asm/barrier.h
++++ b/arch/x86/include/asm/barrier.h
+@@ -4,6 +4,7 @@
+ 
+ #include <asm/alternative.h>
+ #include <asm/nops.h>
++#include <asm/vdso/processor.h>
+ 
+ /*
+  * Force strict CPU ordering.
+--- a/include/linux/atomic/atomic-arch-fallback.h
++++ b/include/linux/atomic/atomic-arch-fallback.h
+@@ -1241,7 +1241,15 @@ arch_atomic_fetch_add_unless(atomic_t *v
+ {
+ 	int c = arch_atomic_read(v);
+ 
++	if (unlikely(c == u))
++		return c;
++
++	if (likely(arch_atomic_try_cmpxchg(v, &c, c + a)))
++		return c;
++
+ 	do {
++		cpu_relax();
++		c = arch_atomic_read(v);
+ 		if (unlikely(c == u))
+ 			break;
+ 	} while (!arch_atomic_try_cmpxchg(v, &c, c + a));
+@@ -1291,7 +1299,15 @@ arch_atomic_inc_unless_negative(atomic_t
+ {
+ 	int c = arch_atomic_read(v);
+ 
++	if (unlikely(c < 0))
++		return false;
++
++	if (likely(arch_atomic_try_cmpxchg(v, &c, c + 1)))
++		return true;
++
+ 	do {
++		cpu_relax();
++		c = arch_atomic_read(v);
+ 		if (unlikely(c < 0))
+ 			return false;
+ 	} while (!arch_atomic_try_cmpxchg(v, &c, c + 1));
+@@ -1307,7 +1323,15 @@ arch_atomic_dec_unless_positive(atomic_t
+ {
+ 	int c = arch_atomic_read(v);
+ 
++	if (unlikely(c > 0))
++		return false;
++
++	if (likely(arch_atomic_try_cmpxchg(v, &c, c - 1)))
++		return true;
++
+ 	do {
++		cpu_relax();
++		c = arch_atomic_read(v);
+ 		if (unlikely(c > 0))
+ 			return false;
+ 	} while (!arch_atomic_try_cmpxchg(v, &c, c - 1));
+@@ -1323,7 +1347,16 @@ arch_atomic_dec_if_positive(atomic_t *v)
+ {
+ 	int dec, c = arch_atomic_read(v);
+ 
++	dec = c - 1;
++	if (unlikely(dec < 0))
++		return dec;
++
++	if (likely(arch_atomic_try_cmpxchg(v, &c, dec)))
++		return dec;
++
+ 	do {
++		cpu_relax();
++		c = arch_atomic_read(v);
+ 		dec = c - 1;
+ 		if (unlikely(dec < 0))
+ 			break;
+@@ -2362,7 +2395,15 @@ arch_atomic64_fetch_add_unless(atomic64_
+ {
+ 	s64 c = arch_atomic64_read(v);
+ 
++	if (unlikely(c == u))
++		return c;
++
++	if (likely(arch_atomic64_try_cmpxchg(v, &c, c + a)))
++		return c;
++
+ 	do {
++		cpu_relax();
++		c = arch_atomic64_read(v);
+ 		if (unlikely(c == u))
+ 			break;
+ 	} while (!arch_atomic64_try_cmpxchg(v, &c, c + a));
+@@ -2412,7 +2453,15 @@ arch_atomic64_inc_unless_negative(atomic
+ {
+ 	s64 c = arch_atomic64_read(v);
+ 
++	if (unlikely(c < 0))
++		return false;
++
++	if (likely(arch_atomic64_try_cmpxchg(v, &c, c + 1)))
++		return true;
++
+ 	do {
++		cpu_relax();
++		c = arch_atomic64_read(v);
+ 		if (unlikely(c < 0))
+ 			return false;
+ 	} while (!arch_atomic64_try_cmpxchg(v, &c, c + 1));
+@@ -2428,7 +2477,15 @@ arch_atomic64_dec_unless_positive(atomic
+ {
+ 	s64 c = arch_atomic64_read(v);
+ 
++	if (unlikely(c > 0))
++		return false;
++
++	if (likely(arch_atomic64_try_cmpxchg(v, &c, c - 1)))
++		return true;
++
+ 	do {
++		cpu_relax();
++		c = arch_atomic64_read(v);
+ 		if (unlikely(c > 0))
+ 			return false;
+ 	} while (!arch_atomic64_try_cmpxchg(v, &c, c - 1));
+@@ -2444,7 +2501,16 @@ arch_atomic64_dec_if_positive(atomic64_t
+ {
+ 	s64 dec, c = arch_atomic64_read(v);
+ 
++	dec = c - 1;
++	if (unlikely(dec < 0))
++		return dec;
++
++	if (likely(arch_atomic64_try_cmpxchg(v, &c, dec)))
++		return dec;
++
+ 	do {
++		cpu_relax();
++		c = arch_atomic64_read(v);
+ 		dec = c - 1;
+ 		if (unlikely(dec < 0))
+ 			break;
+@@ -2456,4 +2522,4 @@ arch_atomic64_dec_if_positive(atomic64_t
+ #endif
+ 
+ #endif /* _LINUX_ATOMIC_FALLBACK_H */
+-// b5e87bdd5ede61470c29f7a7e4de781af3770f09
++// efbeb7f7a4bd60a7390c390e604aeaf11e91a86b
+--- a/scripts/atomic/fallbacks/dec_if_positive
++++ b/scripts/atomic/fallbacks/dec_if_positive
+@@ -4,7 +4,16 @@ arch_${atomic}_dec_if_positive(${atomic}
+ {
+ 	${int} dec, c = arch_${atomic}_read(v);
+ 
++	dec = c - 1;
++	if (unlikely(dec < 0))
++		return dec;
++
++	if (likely(arch_${atomic}_try_cmpxchg(v, &c, dec)))
++		return dec;
++
+ 	do {
++		cpu_relax();
++		c = arch_${atomic}_read(v);
+ 		dec = c - 1;
+ 		if (unlikely(dec < 0))
+ 			break;
+--- a/scripts/atomic/fallbacks/dec_unless_positive
++++ b/scripts/atomic/fallbacks/dec_unless_positive
+@@ -4,7 +4,15 @@ arch_${atomic}_dec_unless_positive(${ato
+ {
+ 	${int} c = arch_${atomic}_read(v);
+ 
++	if (unlikely(c > 0))
++		return false;
++
++	if (likely(arch_${atomic}_try_cmpxchg(v, &c, c - 1)))
++		return true;
++
+ 	do {
++		cpu_relax();
++		c = arch_${atomic}_read(v);
+ 		if (unlikely(c > 0))
+ 			return false;
+ 	} while (!arch_${atomic}_try_cmpxchg(v, &c, c - 1));
+--- a/scripts/atomic/fallbacks/fetch_add_unless
++++ b/scripts/atomic/fallbacks/fetch_add_unless
+@@ -13,7 +13,15 @@ arch_${atomic}_fetch_add_unless(${atomic
+ {
+ 	${int} c = arch_${atomic}_read(v);
+ 
++	if (unlikely(c == u))
++		return c;
++
++	if (likely(arch_${atomic}_try_cmpxchg(v, &c, c + a)))
++		return c;
++
+ 	do {
++		cpu_relax();
++		c = arch_${atomic}_read(v);
+ 		if (unlikely(c == u))
+ 			break;
+ 	} while (!arch_${atomic}_try_cmpxchg(v, &c, c + a));
+--- a/scripts/atomic/fallbacks/inc_unless_negative
++++ b/scripts/atomic/fallbacks/inc_unless_negative
+@@ -4,7 +4,15 @@ arch_${atomic}_inc_unless_negative(${ato
+ {
+ 	${int} c = arch_${atomic}_read(v);
+ 
++	if (unlikely(c < 0))
++		return false;
++
++	if (likely(arch_${atomic}_try_cmpxchg(v, &c, c + 1)))
++		return true;
++
+ 	do {
++		cpu_relax();
++		c = arch_${atomic}_read(v);
+ 		if (unlikely(c < 0))
+ 			return false;
+ 	} while (!arch_${atomic}_try_cmpxchg(v, &c, c + 1));

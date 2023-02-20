@@ -1,0 +1,26 @@
+From 0986b8be8b9fe5baad3d34fc9f687dfedf28e100 Mon Sep 17 00:00:00 2001
+From: "Brett T. Warden" <brett.t.warden@intel.com>
+Date: Mon, 19 Sep 2022 08:52:45 -0700
+Subject: [PATCH] scale
+
+---
+ include/linux/page_counter.h | 1 +
+ mm/memcontrol.c              | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index b69979c9ced5..7eadbafc006b 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -625,7 +625,7 @@ static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
+ 	cgroup_rstat_updated(memcg->css.cgroup, smp_processor_id());
+ 
+ 	x = __this_cpu_add_return(stats_updates, abs(val));
+-	if (x > MEMCG_CHARGE_BATCH) {
++	if (x > MEMCG_CHARGE_BATCH * 128) {
+ 		/*
+ 		 * If stats_flush_threshold exceeds the threshold
+ 		 * (>num_online_cpus()), cgroup stats update will be triggered
+-- 
+2.37.3
+
