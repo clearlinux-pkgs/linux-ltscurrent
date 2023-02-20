@@ -1,3 +1,3 @@
-PKG_NAME := linux-lts2022
+PKG_NAME := linux-ltscurrent
 
 include ../common/Makefile.common
