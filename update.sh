@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-PKG=linux
+PKG=linux-ltscurrent
 STABLE_VER=6.1
 SPEC=./$PKG.spec
 
