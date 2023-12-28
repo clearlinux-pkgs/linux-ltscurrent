@@ -21,7 +21,7 @@ stable_ver = ""
 for release in data["releases"]:
     if release["iseol"]:
         continue
-    if release["moniker"] != "stable" and release["moniker"] != "longterm":
+    if release["moniker"] != "stable":
         continue
     ver = release["version"]
     if ver.startswith(f"{STABLE_VER}."):

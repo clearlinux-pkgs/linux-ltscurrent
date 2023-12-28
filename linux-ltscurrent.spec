@@ -5,13 +5,13 @@
 #
 
 Name:           linux-ltscurrent
-Version:        6.1.69
-Release:        1329
+Version:        6.6.8
+Release:        1393
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.69.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.8.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -38,9 +38,7 @@ Requires: linux-ltscurrent-license = %{version}-%{release}
 #Serie.clr 01XX: Clear Linux patches
 Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-increase-the-ext4-default-commit-age.patch
-Patch0103: 0103-silence-rapl.patch
 Patch0104: 0104-pci-pme-wakeups.patch
-Patch0105: 0105-ksm-wakeups.patch
 Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
 Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
 Patch0108: 0108-smpboot-reuse-timer-calibration.patch
@@ -53,12 +51,10 @@ Patch0115: 0115-enable-stateless-firmware-loading.patch
 Patch0116: 0116-migrate-some-systemd-defaults-to-the-kernel-defaults.patch
 Patch0117: 0117-xattr-allow-setting-user.-attributes-on-symlinks-by-.patch
 Patch0118: 0118-add-scheduler-turbo3-patch.patch
-Patch0119: 0119-use-lfence-instead-of-rep-and-nop.patch
 Patch0120: 0120-do-accept-in-LIFO-order-for-cache-efficiency.patch
 Patch0121: 0121-locking-rwsem-spin-faster.patch
 Patch0122: 0122-ata-libahci-ignore-staggered-spin-up.patch
 Patch0123: 0123-print-CPU-that-faults.patch
-Patch0124: 0124-x86-microcode-Add-an-option-to-reload-microcode-even.patch
 Patch0125: 0125-nvme-workaround.patch
 Patch0126: 0126-don-t-report-an-error-if-PowerClamp-run-on-other-CPU.patch
 Patch0127: 0127-lib-raid6-add-patch.patch
@@ -72,29 +68,29 @@ Patch0135: 0135-initcall-only-print-non-zero-initcall-debug-to-speed.patch
 Patch0136: scale.patch
 Patch0137: libsgrowdown.patch
 Patch0138: kdf-boottime.patch
-Patch0139: adlrdt.patch
-Patch0140: kvm-printk.patch
+#Patch0139: adlrdt.patch
 Patch0141: epp-retune.patch
 Patch0142: tcptuning.patch
-Patch0143: 0001-powerbump-functionality.patch
-Patch0144: 0002-add-networking-support-for-powerbump.patch
-Patch0145: 0003-futex-bump.patch
-Patch0146: 0001-add-umonitor-umwait-C0.x-C-states.patch
 Patch0147: 0001-mm-memcontrol-add-some-branch-hints-based-on-gcov-an.patch
 Patch0148: 0002-sched-core-add-some-branch-hints-based-on-gcov-analy.patch
-Patch0149: netscale.patch
+Patch0154: 0136-crypto-kdf-make-the-module-init-call-a-late-init-cal.patch
+Patch0155: ratelimit-sched-yield.patch
+Patch0157: scale-net-alloc.patch
+Patch0158: 0158-clocksource-only-perform-extended-clocksource-checks.patch
+Patch0160: better_idle_balance.patch
+Patch0161: 0161-ACPI-align-slab-buffers-for-improved-memory-performa.patch
+Patch0162: 0162-extra-optmization-flags.patch
+Patch0163: 0163-thermal-intel-powerclamp-check-MWAIT-first-use-pr_wa.patch
+Patch0164: 0164-KVM-VMX-make-vmx-init-a-late-init-call-to-get-to-ini.patch
+Patch0165: slack.patch
+Patch0166: 0166-sched-fair-remove-upper-limit-on-cpu-number.patch
 #Serie.end
 
 #backports
 #Patch0200: mm-lru_cache_disable-use-synchronize_rcu_expedited.patch
 
-Patch0401: sched-hybrid1.patch
-Patch0402: sched-hybrid2.patch
-Patch0403: sched-hybrid3.patch
-Patch0404: sched-hybrid4.patch
-
-Patch0500: 0001-sched-migrate.patch
-Patch0501: 0002-sched-migrate.patch
+#Patch0500: 0001-sched-migrate.patch
+#Patch0501: 0002-sched-migrate.patch
 
 %description
 The Linux kernel.
@@ -135,7 +131,7 @@ Requires:       linux-ltscurrent-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.1.69
+%setup -q -n linux-6.6.8
 
 #cve.patch.start cve patches
 #cve.patch.end
@@ -146,9 +142,7 @@ Linux kernel build files
 #Serie.patch.start Clear Linux patches
 %patch0101 -p1
 %patch0102 -p1
-%patch0103 -p1
 %patch0104 -p1
-%patch0105 -p1
 %patch0106 -p1
 %patch0107 -p1
 %patch0108 -p1
@@ -161,12 +155,10 @@ Linux kernel build files
 %patch0116 -p1
 %patch0117 -p1
 #%patch0118 -p1
-%patch0119 -p1
 %patch0120 -p1
 %patch0121 -p1
 %patch0122 -p1
 %patch0123 -p1
-%patch0124 -p1
 %patch0125 -p1
 %patch0126 -p1
 %patch0127 -p1
@@ -179,28 +171,30 @@ Linux kernel build files
 %patch0135 -p1
 %patch0136 -p1
 %patch0137 -p1
-%patch0138 -p1
-%patch0139 -p1
-%patch0140 -p1
+#%patch0138 -p1
+#%patch0139 -p1
 %patch0141 -p1
 %patch0142 -p1
-%patch0143 -p1
-%patch0144 -p1
-%patch0145 -p1
-%patch0146 -p1
 %patch0147 -p1
 %patch0148 -p1
-%patch0149 -p1
+%patch0154 -p1
+%patch0155 -p1
+%patch0157 -p1
+%patch0158 -p1
+%patch0160 -p1
+%patch0161 -p1
+%patch0162 -p1
+%patch0163 -p1
+%patch0164 -p1
+%patch0165 -p1
+%patch0166 -p1
 #Serie.patch.end
 
 # backports
 
-%patch0401 -p1
-%patch0403 -p1
-%patch0404 -p1
 
-%patch0500 -p1
-%patch0501 -p1
+#%patch0500 -p1
+#%patch0501 -p1
 
 
 cp %{SOURCE1} .
@@ -292,7 +286,7 @@ createCPIO() {
     (
       cd cpiofile
       find . | cpio --create --format=newc \
-        | xz --check=crc32 --lzma2=dict=512KiB > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
+        | xz --check=crc32 --lzma2=dict=1024KiB > ${KernelDir}/initrd-org.clearlinux.${Target}.%{version}-%{release}
     )
 }
 
