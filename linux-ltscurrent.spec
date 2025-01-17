@@ -5,13 +5,13 @@
 #
 
 Name:           linux-ltscurrent
-Version:        6.6.72
-Release:        1467
+Version:        6.12.10
+Release:        1468
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.72.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.10.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -29,10 +29,8 @@ Requires: linux-ltscurrent-license = %{version}-%{release}
 %define debug_package %{nil}
 %define __strip /bin/true
 
-#cve.start cve patches from 0001 to 050
-#cve.end
-
 #mainline: Mainline patches, upstream backport and fixes from 0051 to 0099
+Patch0050: 0050-Revert-ext4-do-not-create-EA-inode-under-buffer-lock.patch
 #mainline.end
 
 #Serie.clr 01XX: Clear Linux patches
@@ -40,7 +38,6 @@ Patch0101: 0101-i8042-decrease-debug-message-level-to-info.patch
 Patch0102: 0102-increase-the-ext4-default-commit-age.patch
 Patch0104: 0104-pci-pme-wakeups.patch
 Patch0106: 0106-intel_idle-tweak-cpuidle-cstates.patch
-Patch0107: 0107-bootstats-add-printk-s-to-measure-boot-time-in-more-.patch
 Patch0108: 0108-smpboot-reuse-timer-calibration.patch
 Patch0109: 0109-initialize-ata-before-graphics.patch
 Patch0111: 0111-ipv4-tcp-allow-the-memory-tuning-for-tcp-to-go-a-lit.patch
@@ -65,25 +62,23 @@ Patch0132: 0132-prezero-20220308.patch
 Patch0133: 0133-novector.patch
 Patch0134: 0134-md-raid6-algorithms-scale-test-duration-for-speedier.patch
 Patch0135: 0135-initcall-only-print-non-zero-initcall-debug-to-speed.patch
-Patch0136: scale.patch
 Patch0137: libsgrowdown.patch
 Patch0138: kdf-boottime.patch
 #Patch0139: adlrdt.patch
 Patch0141: epp-retune.patch
-Patch0142: tcptuning.patch
 Patch0147: 0001-mm-memcontrol-add-some-branch-hints-based-on-gcov-an.patch
 Patch0148: 0002-sched-core-add-some-branch-hints-based-on-gcov-analy.patch
 Patch0154: 0136-crypto-kdf-make-the-module-init-call-a-late-init-cal.patch
-Patch0155: ratelimit-sched-yield.patch
+Patch0156: ratelimit-sched-yield.patch
 Patch0157: scale-net-alloc.patch
 Patch0158: 0158-clocksource-only-perform-extended-clocksource-checks.patch
 Patch0160: better_idle_balance.patch
 Patch0161: 0161-ACPI-align-slab-buffers-for-improved-memory-performa.patch
-Patch0162: 0162-extra-optmization-flags.patch
 Patch0163: 0163-thermal-intel-powerclamp-check-MWAIT-first-use-pr_wa.patch
 Patch0164: 0164-KVM-VMX-make-vmx-init-a-late-init-call-to-get-to-ini.patch
 Patch0165: slack.patch
 Patch0166: 0166-sched-fair-remove-upper-limit-on-cpu-number.patch
+Patch0167: 0167-net-sock-increase-default-number-of-_SK_MEM_PACKETS-.patch
 #Serie.end
 
 #backports
@@ -91,6 +86,7 @@ Patch0166: 0166-sched-fair-remove-upper-limit-on-cpu-number.patch
 
 #Patch0500: 0001-sched-migrate.patch
 #Patch0501: 0002-sched-migrate.patch
+
 
 %description
 The Linux kernel.
@@ -131,12 +127,13 @@ Requires:       linux-ltscurrent-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.6.72
+%setup -q -n linux-6.12.10
 
 #cve.patch.start cve patches
 #cve.patch.end
 
 #mainline.patch.start Mainline patches, upstream backport and fixes
+%patch0050 -p1
 #mainline.patch.end
 
 #Serie.patch.start Clear Linux patches
@@ -144,9 +141,8 @@ Linux kernel build files
 %patch0102 -p1
 %patch0104 -p1
 %patch0106 -p1
-%patch0107 -p1
 %patch0108 -p1
-%patch0109 -p1
+#%patch0109 -p1
 %patch0111 -p1
 %patch0112 -p1
 #%patch0113 -p1
@@ -159,7 +155,7 @@ Linux kernel build files
 %patch0121 -p1
 %patch0122 -p1
 %patch0123 -p1
-%patch0125 -p1
+#%patch0125 -p1
 %patch0126 -p1
 %patch0127 -p1
 %patch0128 -p1
@@ -169,25 +165,22 @@ Linux kernel build files
 %patch0133 -p1
 %patch0134 -p1
 %patch0135 -p1
-%patch0136 -p1
 %patch0137 -p1
 #%patch0138 -p1
 #%patch0139 -p1
 %patch0141 -p1
-%patch0142 -p1
-%patch0147 -p1
 %patch0148 -p1
 %patch0154 -p1
-%patch0155 -p1
+%patch0156 -p1
 %patch0157 -p1
 %patch0158 -p1
 %patch0160 -p1
 %patch0161 -p1
-%patch0162 -p1
 %patch0163 -p1
 %patch0164 -p1
 %patch0165 -p1
 %patch0166 -p1
+%patch0167 -p1
 #Serie.patch.end
 
 # backports
