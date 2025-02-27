@@ -5,13 +5,13 @@
 #
 
 Name:           linux-ltscurrent
-Version:        6.12.16
-Release:        1476
+Version:        6.12.17
+Release:        1477
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
 Group:          kernel
-Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.16.tar.xz
+Source0:        https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.17.tar.xz
 Source1:        config
 Source2:        cmdline
 
@@ -127,7 +127,7 @@ Requires:       linux-ltscurrent-license = %{version}-%{release}
 Linux kernel build files
 
 %prep
-%setup -q -n linux-6.12.16
+%setup -q -n linux-6.12.17
 
 #cve.patch.start cve patches
 #cve.patch.end
