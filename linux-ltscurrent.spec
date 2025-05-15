@@ -6,7 +6,7 @@
 
 Name:           linux-ltscurrent
 Version:        6.12.28
-Release:        1490
+Release:        1491
 License:        GPL-2.0
 Summary:        The Linux kernel
 Url:            http://www.kernel.org/
